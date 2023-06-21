@@ -237,9 +237,10 @@ fn main() {
             old_size = new_size;
             new_size = Size::get_current_size();
             layout = Layout::new(new_size);
-            clear();
+            erase();
             layout.draw_rectangle();
             layout.draw_header();
+            display_list_ncurses(&entry_list, &layout);
         }
 
         refresh();
@@ -247,13 +248,13 @@ fn main() {
         loop {
             let pub_message = recv.recv_timeout(Duration::from_millis(100));
             if pub_message.is_ok() {
-                clear();
-                layout.draw_rectangle();
-                layout.draw_header();
                 debug!("Received message: {:?}", pub_message);
                 entry_list.add(&pub_message.unwrap());
-                display_list_ncurses(&entry_list, &layout);
             } else {
+                erase();
+                layout.draw_rectangle();
+                layout.draw_header();
+                display_list_ncurses(&entry_list, &layout);
                 thread::sleep(Duration::from_millis(100));
                 break;
             }
