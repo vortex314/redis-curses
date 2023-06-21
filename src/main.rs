@@ -17,8 +17,8 @@ extern crate redis;
 use chrono::{DateTime, Local};
 
 use crossbeam_channel::{bounded, unbounded, Receiver, Sender};
-use log::{info, warn,debug,trace,error};
 use log::LevelFilter;
+use log::{debug, error, info, trace, warn};
 use log4rs::append::file::FileAppender;
 use log4rs::config::{Appender, Config, Root};
 use log4rs::encode::pattern::PatternEncoder;
@@ -223,7 +223,15 @@ fn main() {
 
     thread::spawn(move || {
         info!("Starting Redis ");
-        do_redis(send).unwrap();
+        loop {
+            match do_redis(send.clone()) {
+                Ok(_) => {}
+                Err(e) => {
+                    error!("Error: {:?}", e);
+                    thread::sleep(Duration::from_millis(5000));
+                }
+            }
+        }
     });
 
     let mut ordering = OrderSort::Topic;
