@@ -12,8 +12,8 @@ pub fn do_redis(sender: Sender<PublishMessage>) -> redis::RedisResult<()> {
         let client = redis::Client::open("redis://192.168.0.102/")?;
         let mut con = client.get_connection()?;
         let mut pubsub = con.as_pubsub();
-        pubsub.psubscribe("src/*")?;
-        info!("Subscribed to src/*");
+        pubsub.psubscribe("*")?;
+        info!("Subscribed to *");
         loop {
             let msg = pubsub.get_message().unwrap();
             let pub_msg = PublishMessage {
